@@ -15,7 +15,7 @@ croniter = "^1.0.15"
 loguru = "^0.5.3"
 Unidecode = "^1.2.0"
 timeout-decorator = "^0.5.0"
-pyzenity = {git = "https://github.com/bcbernardo/Zenity.git", rev="ab46b78"}
+easygui = "^0.98.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

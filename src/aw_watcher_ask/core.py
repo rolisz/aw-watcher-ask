@@ -9,9 +9,12 @@
 import sys
 import time
 from datetime import datetime
+from tkinter import simpledialog
 from typing import Any, Dict, Optional
 
-import zenity
+# import zenity
+import easygui
+
 from aw_client import ActivityWatchClient
 from aw_core.models import Event
 from croniter import croniter
@@ -43,16 +46,17 @@ def _client_setup(testing: bool = False) -> ActivityWatchClient:
 
 
 def _ask_one(
-    question_type: DialogType, title: str, *args, **kwargs
+    question_type: DialogType, title: str, text: str, *args, **kwargs
 ) -> Dict[str, Any]:
     """Captures an user's response to a dialog box with a single field."""
     kwargs.pop("ctx", None)
-    success, content = zenity.show(
-        question_type.value, title=title, *args, **kwargs
-    )
+    # TODO Do ifelse on question type
+    choices = ["Vanilla", "Chocolate", "Strawberry", "Rocky Road"]
+    result = easygui.choicebox(text, title, choices)
+
     return {
-        "success": success,
-        title: content,
+        "success": bool(result),
+        title: result,
     }
 
 
@@ -65,7 +69,7 @@ def _ask_many(
 
 def main(
     question_id: str,
-    question_type: DialogType = DialogType.question,
+    question_type: DialogType = DialogType.entry,
     title: Optional[str] = None,
     schedule: str = "R * * * *",
     until: datetime = datetime(2100, 12, 31),
@@ -113,7 +117,7 @@ def main(
         testing: Whether to run the [`aw_client.ActivityWatchClient`]
             (https://docs.activitywatch.net/en/latest/api/python.html
             #aw_client.ActivityWatchClient) client in testing mode.
-        *args: Variable lenght argument list to be passed to [`zenity.show()`]
+        *args: Variable length argument list to be passed to [`zenity.show()`]
             (https://pyzenity.gitbook.io/docs/) Zenity wrapper.
         **kwargs: Variable lenght argument list to be passed to
             [`zenity.show()`](https://pyzenity.gitbook.io/docs/) Zenity
@@ -124,7 +128,7 @@ def main(
             `DialogType.forms`, `DialogType.list` or
             `DialogType.file_selection`.
     """
-
+    # TODO: Figure out how to give validation for parameters
     log_format = "{time} <{extra[question_id]}>: {level} - {message}"
     logger.add(sys.stderr, level="INFO", format=log_format)
     log = logger.bind(question_id=question_id)
